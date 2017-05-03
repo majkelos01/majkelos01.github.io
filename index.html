@@ -1,0 +1,95 @@
+Setting Up ArchLinux Segate GoFlex Home 
+
+1. Go to Ubuntu and connect the HDD 
+1.1 Partition the disk to have 2 or 3 partitions
+
+/sbin/fdisk /dev/sdb (or sda depends)
+
+At the fdisk prompt, delete old partitions and create a new one:
+
+    Type o. This will clear out any partitions on the drive.
+    Type p to list partitions. There should be no partitions left.
+    Now type n, then p for primary, 1 for the first partition on the drive, and then press ENTER, to accept the default value for the beginning of the partition and +20G for the next prompt.
+    Create a partition for the remainder of the drive. Type n, then p for primary, 2 for the second partition on the drive, and then press ENTER to accept the rest of the default values.
+    Exit by typing w.
+    
+2. Create the ext3 filesystem:
+
+cd /tmp
+wget http://os.archlinuxarm.org/os/pogoplug/mke2fs
+chmod +x mke2fs
+./mke2fs -j /dev/sdb1
+mkdir alarm
+mount /dev/sdb1 alarm
+
+3. Download and install Arch Linux ARM:
+
+cd alarm
+wget http://os.archlinuxarm.org/os/pogoplug/bsdtar
+chmod +x bsdtar
+wget http://os.archlinuxarm.org/os/ArchLinuxARM-kirkwood-latest.tar.gz
+./bsdtar -xpf ArchLinuxARM-kirkwood-latest.tar.gz
+cd ..
+umount alarm
+
+4. Create ext filesystem 
+
+mkfs.ext4 /dev/sdb2
+
+5. Connect the disk to the Dock and should be working (this works cos I have uBoot already isntaled and configured)
+
+-----------------
+Change Root Password
+su root
+passwd
+
+
+---
+useradd -m -G wheel -s /usr/bin/bash common_user
+groupadd webdata  # for sharing
+useradd -M -G webdata -s /usr/bin/false nginx
+usermod -aG webdata common_user
+
+----
+pacman -Syu
+
+---
+pacman -S vim zsh wget ranger htop lynx nano
+
+
+-------------------------------
+timedatectl  #check time, then setup timezone
+timedatectl set-timezone Australia/Perth
+
+-------------------------------
+pacman -S screen
+some notes on screen stuffs:
+Type “Ctrl-A” and ?  without " to see the commands
+
+  __Detach the screen___
+  The download process is estimated to take 2 hours long. 
+  If you disconnect the SSH session, or suddenly the connection lost by accident, 
+  then the download process will stop. You have to start from the beginning again. 
+  To avoid that, we can use screen and detach it
+  
+  screen
+  ....command that takes time.....
+  .....While downloading in progress, you can press “Ctrl-A” and “d“.
+  
+  ___Re-attach the screen_____
+  screen -r
+  if mroe thn 1 screens than
+  screen -ls
+    - this will output lists with numbers
+      screen -r 7849
+      
+     
+  ____Leaving Screen_____
+   “Ctrl-A” and “d”
+   Ctrl-A” and “K”
+
+---------------------
+
+  
+  
+  
