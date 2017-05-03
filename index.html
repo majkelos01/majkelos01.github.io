@@ -204,8 +204,21 @@ Conf File:####
 
 Install miniDLNA
 
+    pacman -Sy minidlna
+    systemctl enable minidlna
 
-  
+    nano /etc/minidlna.conf
+    #add directory
+
+    systemctl start minidlna
+    systemctl enable minidlna
+
+ ---------
+
+install aria 2c
+    pacman -S aria2
+    
+
 ----
 Some notes:
 https://blog.philippklaus.de/2011/04/install-archlinuxarm-on-the-seagate-goflex-home/
