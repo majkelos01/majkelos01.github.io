@@ -39,15 +39,6 @@ mkfs.ext4 /dev/sdb2
 5. Connect the disk to the Dock and should be working (this works cos I have uBoot already isntaled and configured)
 
 
-
-----
-Some notes:
-https://blog.philippklaus.de/2011/04/install-archlinuxarm-on-the-seagate-goflex-home/
-https://archlinuxarm.org/platforms/armv5/seagate-goflex-home
-http://tutos.readthedocs.io/en/latest/source/RPi.html
-https://archlinuxarm.org/forum/viewtopic.php?f=30&t=1325
-
-
 -----------------
 Change Root Password
 su root
@@ -99,7 +90,125 @@ Type “Ctrl-A” and ?  without " to see the commands
    Ctrl-A” and “K”
 
 ---------------------
+esit fstab 
+
+#/etc/fstab
+/dev/sda1  /       ext3  noatime  0 0
+/dev/sda2  /home   ext4  noatime  0 0
+
+
+------------
+install webmin ...
+
+pacman -Sy webmin perl-net-ssleay
+
+nano /etc/webmin/miniserv.conf #allow exernall address
+   allow=192.168.0.0 ##
+
+systemctl enable webmin
+systemctl start webmin
+
+------------
+usb automount
+
+pacman -Sy udevil ntfs-3g
+
+need to add the  ntfs-3g  to mount to increase speed
+    nano /etc/udevil/udevil.conf
+    ....add   big_writes  option 
+
+    mkdir /media
+    systemctl enable devmon@root
+
+    ...
+    reboot
+    ..check if this worked
+    mount
+
+
+--------------------
+
+Install SAMBA
+    pacman -Sy samba
+    systemctl enable smbd nmbd
+    
+    groupadd samba
+    useradd -m -g samba -s /sbin/nologin sambu
+    pdbedit -a -u sambu
+
+Conf File:####
+[global]
+   workgroup = WORKGROUP
+   server string = POGOPLUG
+   netbios name = POGOPLUG
+   # hosts allow = 192.168.0.
+   printcap name = /dev/null
+   load printers = no
+   disable spoolss = yes
+   printing = bsd
+   show add printer wizard = no
+   print notify backchannel = no
+   log file = /var/log/samba/log.%m
+   max log size = 50
+   security = user
+   dns proxy = no
+   # For public share without login
+   map to guest = Bad User
+ 
+   # Android bugix for reading files (samba4 bug see: https://bugzilla.samba.org/show_bug.cgi?id=9706)
+   unix extensions = false
+ 
+   # Fix for file batch copy issues (see: http://archlinuxarm.org/forum/viewtopic.php?f=18&t=4864) - seems to be fixed now (28.09.2015)
+   # oplocks = no
+   # level2 oplocks = no
+ 
+   # Some Tuning (See Optimize Performance)
+   socket options = TCP_NODELAY IPTOS_LOWDELAY
+   write cache size = 262144
+   # sendfile will interrupt data transfer :/ (but cpu usage is less) - seems to be fixed now (03.05.2015)
+   use sendfile = true
+   getwd cache = yes
+   min receivefile size = 16384
+   max xmit = 65536
+   # Global security
+   public = yes
+ 
+#============================ Share Definitions ==============================
+ 
+# Public, read only
+[Videos]
+        comment = Videos for all
+        read only = yes
+        # use this only for read only shares!
+        fake oplocks = yes
+        path = /media/zincobi/Videos
+ 
+# Public, writeable
+[Abrechnungen]
+        comment = Abrechnungen
+        read only = no
+        writeable = yes
+        path = /media/zincobi/Abrechnungen
+ 
+# whole HDD, only for fabian
+[zincobi]
+        comment = Fabians share
+        public = no
+        valid users = fabian
+        read only = no
+        writeable = yes
+        path = /media/zincobi
+
+#####
+-----------------------------------------------------
+
+Install miniDLNA
+
 
   
-  
-  
+----
+Some notes:
+https://blog.philippklaus.de/2011/04/install-archlinuxarm-on-the-seagate-goflex-home/
+https://archlinuxarm.org/platforms/armv5/seagate-goflex-home
+http://tutos.readthedocs.io/en/latest/source/RPi.html
+https://archlinuxarm.org/forum/viewtopic.php?f=30&t=1325
