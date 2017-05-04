@@ -216,7 +216,45 @@ Install miniDLNA
  ---------
 
 install aria 2c
+
     pacman -S aria2
+
+in the /root/.aria2c/ crate
+    aria2.conf
+    aria2.log
+    aria2.session
+
+Config file:
+
+continue
+dir=/media/storage
+file-allocation=prealloc
+log-level=warn
+log=/root/.aria2/aria.log
+check-certificate=false
+
+max-connection-per-server=4
+max-concurrent-downloads=3
+max-overall-download-limit=0
+
+min-split-size=5M
+split=10
+
+enable-http-pipelining=true
+disable-ipv6=true
+
+enable-rpc=true
+rpc-listen-port=6800
+rpc-listen-all=true
+rpc-allow-origin-all=true
+rpc-secret=torrent
+
+input-file=/root/.aria2/aria2.session
+save-session=/root/.aria2/aria2.session
+save-session-interval=60
+
+------
+
     
 
 ----
